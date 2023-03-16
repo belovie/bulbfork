@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bulb Fork</title>
+  <style>
+    /* Base styles */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #282828;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    #bulbContainer {
+      position: relative;
+      margin-right: 2rem;
+      width: 150px;
+      height: 150px;
+      cursor: pointer;
+    }
+
+    #bulb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: rgba(0,0,0,0.1);
+      box-shadow: 
+        inset 0px 0px 20px rgba(255,255,255,0.4),
+        inset 0px 0px 30px rgba(255,255,255,0.2);
+      transition: box-shadow 0.2s;
+    }
+
+    #bulb.on {
+      background-color: #ffed5d;
+      box-shadow: 
+        inset 0px 0px 20px rgba(255,255,255,0.4),
+        inset 0px 0px 30px rgba(255,255,255,0.2),
+        0px 0px 50px #ffed5d;
+    }
+
+    #bulb.yellow {
+      background-color: #ffed5d;
+    }
+
+    #bulb.red {
+      background-color: #FF4136;
+    }
+
+    #bulb.pink {
+      background-color: #F012BE;
+    }
+
+    #bulb.orange {
+      background-color: #FF851B;
+    }
+
+    #bulb.green {
+      background-color: #2ECC40;
+    }
+
+    #bulb.blue {
+      background-color: #0074D9;
+    }
+
+    #bulb.purple {
+      background-color: #B10DC9;
+    }
+
+    #bulb > span {
+      display: block;
+      position: absolute;
+      bottom: -45px;
+      left: -30px;
+      width: 210px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(0deg, #fff, #D7E0E9);
+      box-shadow: 
+        inset -5px -5px 5px rgba(255,255,255,0.6),
+        inset 5px 5px 5px rgba(0,0,0,0.2),
+        inset -2px -2px 2px rgba(255,255,255,0.5),
+        inset 2px 2px 2px rgba(0,0,0,0.1),
+        5px 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.2s, box-shadow 0.2s
+    transform: rotate(-30deg);
+  }
+
+  #bulb:active > span {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2), inset 0px 0px 20px rgba(255, 255, 255, 0.4), inset 0px 0px 30px rgba(255, 255, 255, 0.2);
+    transform: rotate(-30deg);
+  }
+
+  .rope {
+    display: block;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    width: 4px;
+    height: 50px;
+    margin-left: -2px;
+    border-radius: 2px;
+    background: #BFBFBF;
+    box-shadow: inset -1px -1px 1px rgba(255,255,255,0.4), inset 1px 1px 1px rgba(0,0,0,0.4), 1px 1px 1px rgba(0,0,0,0.2);
+  }
+
+  .rope:before, .rope:after {
+    content: "";
+    display: block;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 50%;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    background: #BFBFBF;
+    box-shadow: inset -1px -1px 1px rgba(255,255,255,0.4), inset 1px 1px 1px rgba(0,0,0,0.4);
+  }
+
+  .rope:before {
+    left: -4px;
+    transform: rotate(-45deg);
+  }
+
+  .rope:after {
+    right: -4px;
+    transform: rotate(45deg);
+  }
+
+  #tug {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    margin-left: -5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #BFBFBF;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.2), inset 0px -1px 1px rgba(255,255,255,0.5), inset 0px 1px 1px rgba(0,0,0,0.2);
+    cursor: pointer;
+  }
+
+  #tug:active {
+    top: -18px;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.2), inset 0px -1px 1px rgba(255,255,255,0.5), inset 0px 1px 1px rgba(0,0,0,0.2);
+  }
+</style>
+
+<div id="bulb">
+  <span></span>
+  <span class="rope"></span>
+  <span id="tug"></span>
+</div>
+
+<script>
+  // Toggle classes to switch between color states
+ function toggleClass(el, className) {
+  if (el.classList) {
+    el.classList.toggle(className);
+  } else {
+    var classes = el.className.split(' ');
+    var existingIndex = classes.indexOf(className);
+
+    if (existingIndex >= 0) {
+      classes.splice(existingIndex, 1);
+    } else {
+      classes.push(className);
+    }
+
+    el.className = classes.join(' ');
+  }
+}
+
+var bulb = document.getElementById('bulb');
+var string = document.getElementById('string');
+var state = 0;
+var colors = ['#000', '#ff0', '#f00', '#f0f', '#ffa500', '#ff0', '#0f0', '#00f', '#800080'];
+
+function toggleBulb() {
+  state = (state + 1) % 9;
+  bulb.style.backgroundColor = colors[state];
+  toggleClass(string, 'active');
+}
+
+string.addEventListener('mousedown', function() {
+  toggleBulb();
+});
+
+string.addEventListener('touchstart', function() {
+  toggleBulb();
+});
+
+
+    // Toggle the bulb on and off
+    if (bulb.classList.contains('on')) {
+      bulb.classList.remove('on');
+      bulb.classList.add(colors[colorIndex]);
+      colorIndex++;
+      if (colorIndex >= colors.length) {
+        colorIndex = 0;
+      }
+    } else {
+      bulb.classList.add('on');
+    }
+  }
+
+  // Add event listeners for mouse and touch interactions
+  bulbContainer.addEventListener('mousedown', onTouchStart);
+  bulbContainer.addEventListener('mousemove', onTouchMove);
+  bulbContainer.addEventListener('mouseup', onTouchEnd);
+  bulbContainer.addEventListener('touchstart', onTouchStart);
+  bulbContainer.addEventListener('touchmove', onTouchMove);
+  bulbContainer.addEventListener('touchend', onTouchEnd);
+</script>
+</head></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      } else {
+        bulbContainer.className = bulbContainer.className.indexOf('off') >= 0 ? 'bulb yellow' : 'bulb off';
+      }
+
+      // Increment counter
+      colorIndex = (colorIndex + 1) % colors.length;
+    }
+
+    // Add event listeners for mouse and touch interactions
+    bulbContainer.addEventListener('mousedown', onTouchStart);
+    bulbContainer.addEventListener('mousemove', onTouchMove);
+    bulbContainer.addEventListener('mouseup', onTouchEnd);
+    bulbContainer.addEventListener('touchstart', onTouchStart);
+    bulbContainer.addEventListener('touchmove', onTouchMove);
+    bulbContainer.addEventListener('touchend', onTouchEnd);
+  </script>
+</body>
+
+</html>
+
