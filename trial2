@@ -358,6 +358,13 @@ function toggleClass(el, className) {
   }
 }
 
+// Add event listeners for mouse and touch events
+bulbContainer.addEventListener('mousedown', onTouchStart);
+bulbContainer.addEventListener('mousemove', onTouchMove);
+bulbContainer.addEventListener('mouseup', onTouchEnd);
+bulbContainer.addEventListener('touchstart', onTouchStart);
+bulbContainer.addEventListener('touchmove', onTouchMove);
+bulbContainer.addEventListener('touchend', onTouchEnd);
 
 
   </script>
