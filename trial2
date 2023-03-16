@@ -366,6 +366,165 @@ bulbContainer.addEventListener('touchstart', onTouchStart);
 bulbContainer.addEventListener('touchmove', onTouchMove);
 bulbContainer.addEventListener('touchend', onTouchEnd);
 
+<style>
+    #bulb-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    #bulb {
+      position: relative;
+      width: 60px;
+      height: 100px;
+      cursor: pointer;
+    }
+    
+    #bulb > span {
+      display: block;
+      position: absolute;
+      bottom: -45px;
+      left: -30px;
+      width: 210px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(0deg, #fff, #D7E0E9);
+      box-shadow: inset -5px -5px 5px rgba(255, 255, 255, 0.6), inset 5px 5px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 2px rgba(255, 255, 255, 0.5), inset 2px 2px 2px rgba(0, 0, 0, 0.1), 5px 5px 15px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      transform: rotate(-30deg);
+    }
+    
+    #bulb:active>span {
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5), 0 0 10px rgba(0, 0, 0, 0.2), inset 0px 0px 20px rgba(255, 255, 255, 0.4), inset 0px 0px 30px rgba(255, 255, 255, 0.2);
+      transform: rotate(-10deg);
+    }
+    
+    #string {
+      position: absolute;
+      bottom: 0;
+      width: 4px;
+      height: 200px;
+      background-color: #F8E7AC;
+      border-radius: 3px;
+      transition: height 0.2s;
+    }
+    
+    #string:active {
+      height: 250px;
+    }
+    
+    .light-on {
+      background: linear-gradient(0deg, #fff, #D7E0E9);
+      box-shadow: inset -5px -5px 5px rgba(255, 255, 255, 0.6), inset 5px 5px 5px rgba(0, 0, 0, 0.2), inset -2px -2px 2px rgba(255, 255, 255, 0.5), inset 2px 2px 2px rgba(0, 0, 0, 0.1), 5px 5px 15px rgba(0, 0, 0, 0.3);
+    }
+    
+    .light-off {
+      background-color: #ccc;
+    }
+    
+    .light-yellow {
+      background-color: yellow;
+    }
+    
+    .light-red {
+      background-color: red;
+    }
+    
+    .light-pink {
+      background-color: pink;
+    }
+    
+    .light-orange {
+      background-color: orange;
+    }
+    
+    .light-green {
+      background-color: green
+
+  function onTouchStart(event) {
+    event.preventDefault();
+    var touch = event.touches[0];
+    startX = touch.clientX;
+    startY = touch.clientY;
+    startTime = new Date().getTime();
+    elapsedTime = 0;
+    swipeDirection = null;
+  }
+
+  function onTouchMove(event) {
+    event.preventDefault();
+    var touch = event.touches[0];
+    var deltaX = touch.clientX - startX;
+    var deltaY = touch.clientY - startY;
+    dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    elapsedTime = new Date().getTime() - startTime;
+    var swipeAngle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+    if (elapsedTime <= allowedTime) {
+      if (Math.abs(deltaX) >= threshold && Math.abs(deltaY) <= restraint) {
+        swipeDirection = (deltaX < 0) ? 'left' : 'right';
+      } else if (Math.abs(deltaY) >= threshold && Math.abs(deltaX) <= restraint) {
+        swipeDirection = (deltaY < 0) ? 'up' : 'down';
+      }
+    }
+    manageClasses();
+  }
+
+  function onTouchEnd(event) {
+    event.preventDefault();
+    elapsedTime = new Date().getTime() - startTime;
+    manageClasses();
+  }
+
+  function manageClasses() {
+    var bulb = document.getElementById('bulb');
+    if (swipeDirection === 'right' || swipeDirection === 'left') {
+      toggleClass(bulb, 'off');
+      switch (currentColor) {
+        case 'yellow':
+          currentColor = 'red';
+          break;
+        case 'red':
+          currentColor = 'pink';
+          break;
+        case 'pink':
+          currentColor = 'orange';
+          break;
+        case 'orange':
+          currentColor = 'yellow';
+          break;
+        case 'green':
+          currentColor = 'blue';
+          break;
+        case 'blue':
+          currentColor = 'purple';
+          break;
+        case 'purple':
+          currentColor = 'yellow';
+          break;
+        default:
+          currentColor = 'yellow';
+      }
+      bulb.style.setProperty('--bulb-color', colors[currentColor]);
+    } else if (swipeDirection === 'up') {
+      toggleClass(bulb, 'on');
+      toggleClass(bulb, 'off');
+    } else if (swipeDirection === 'down') {
+      toggleClass(bulb, 'off');
+      toggleClass(bulb, 'on');
+    }
+  }
+
+  // Bind events
+  var bulbContainer = document.getElementById('bulb-container');
+  bulbContainer.addEventListener('mousedown', onTouchStart);
+  bulbContainer.addEventListener('mousemove', onTouchMove);
+  bulbContainer.addEventListener('mouseup', onTouchEnd);
+  bulbContainer.addEventListener('touchstart', onTouchStart);
+  bulbContainer.addEventListener('touchmove', onTouchMove);
+  bulbContainer.addEventListener('touchend', onTouchEnd);
+})();
 
   </script>
 </body>
