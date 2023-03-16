@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Tuggable Light Bulb</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+</head>
+<body>
+  <div id="bulb-container">
+    <div id="bulb">
+      <span></span>
+    </div>
+    <div id="string-container">
+      <div id="string"></div>
+    </div>
+  </div>
+  <script>
+    // Define the colors and the current color index
+    const colors = ['#000', '#ff0', '#f00', '#ff69b4', '#ffa500', '#0f0', '#00f', '#800080'];
+    let currentColorIndex = 0;
+    
+    function setup() {
+      createCanvas(0, 0);
+      const bulbContainer = document.querySelector('#bulb-container');
+      let startX, startY, dist, elapsedTime, swipeDirection = null;
+    
+      function onTouchStart(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+          startX = e.touches[0].pageX;
+          startY = e.touches[0].pageY;
+          swipeDirection = null;
+          elapsedTime = new Date().getTime();
+        }
+      }
+    
+      function onTouchMove(e) {
+        e.preventDefault();
+        if (e.touches.length === 1) {
+          const touch = e.touches[0];
+          const deltaX = touch.pageX - startX;
+          const deltaY = touch.pageY - startY;
+          if (!swipeDirection) {
+            swipeDirection = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+          }
+          if (swipeDirection === 'vertical') {
+            dist = touch.pageY - startY;
+            const string = document.querySelector('#string');
+            string.style.transform = `translateY(${dist}px)`;
+            toggleClass(document.querySelector('#bulb > span'), 'on');
+            // Switch the color every other toggle
+            if (dist % 50 === 0) {
+              currentColorIndex = (currentColorIndex + 1) % colors.length;
+              const color = colors[currentColorIndex];
+              document.querySelector('#bulb > span').style.background = color;
+            }
+          }
+        }
+      }
+    
+      function onTouchEnd(e) {
+        e.preventDefault();
+        const elapsedTimeSeconds = (new Date().getTime() - elapsedTime) / 1000;
+        const velocity = dist / elapsedTimeSeconds;
+        if (velocity > 150 && swipeDirection === 'vertical') {
+          // fast swipe
+        } else if (swipeDirection === 'vertical') {
+          // slow swipe
+          const string = document.querySelector('#string');
+          string.style.transition = 'transform 0.2s ease-in-out';
+          string.style.transform = `translateY(0px)`;
+          setTimeout(() => {
+            string.style.transition = '';
+          }, 200);
+        }
+        startX = startY = dist = elapsedTime = swipeDirection = null;
+      }
+    
+      // Toggle classes to switch between color states
+      function toggleClass(el, className) {
+        if (el.classList) {
+          el.classList.toggle(className);
+        } else {
+          var classes = el.className.split(' ');
+          var existingIndex = classes.indexOf(className);
+
+          if (existingIndex >= 0)
+            classes.splice(existingIndex, 1);
+          else
+            classes.push(className);
+
+          el.className = classes.join(' ');
+        }
+      }
+
+      // Change color of light bulb on tug
+      function changeBulbColor() {
+        toggleClass(bulb, 'off');
+        toggleClass(bulb, colorClasses[colorIndex]);
+        colorIndex = (colorIndex + 1) % colorClasses.length;
+      }
+
+      // Handle touch events for tuggable string
+      function onTouchStart(e) {
+        startX = e.clientX || e.touches[0].clientX;
+        startY = e.clientY || e.touches[0].clientY;
+        startTime = new Date().getTime();
+        e.preventDefault();
+      }
+
+      function onTouchMove(e) {
+        e.preventDefault();
+      }
+
+      function onTouchEnd(e) {
+        distX = (e.clientX || e.changedTouches[0].clientX) - startX;
+        distY = (e.clientY || e.changedTouches[0].clientY) - startY;
+        elapsedTime = new Date().getTime() - startTime;
+
+        if (Math.abs(distX) >= minDist && Math.abs(distY) <= maxDist && elapsedTime <= maxTime) {
+          changeBulbColor();
+        }
+      }
+
+      // Add touch event listeners to tuggable string
+      tuggableString.addEventListener('touchstart', onTouchStart);
+      tuggableString.addEventListener('touchmove', onTouchMove);
+      tuggableString.addEventListener('touchend', onTouchEnd);
+      tuggableString.addEventListener('mousedown', onTouchStart);
+      tuggableString.addEventListener('mousemove', onTouchMove);
+      tuggableString.addEventListener('mouseup', onTouchEnd);
+    })();
+        var classes = el.className.split(' ');
+          var existingIndex = classes.indexOf(className);
+
+          if (existingIndex >= 0)
+            classes.splice(existingIndex, 1);
+          else
+            classes.push(className);
+
+          el.className = classes.join(' ');
+        }
+      }
+
+      // Add touch event listeners to the container
+      bulbContainer.addEventListener('touchstart', onTouchStart);
+      bulbContainer.addEventListener('touchmove', onTouchMove);
+      bulbContainer.addEventListener('touchend', onTouchEnd);
+
+      // Add mouse event listeners to the container
+      bulbContainer.addEventListener('mousedown', onTouchStart);
+      bulbContainer.addEventListener('mousemove', onTouchMove);
+      bulbContainer.addEventListener('mouseup', onTouchEnd);
+    })();
+  </script>
+</body>
+</html>
